@@ -115,6 +115,7 @@ type HeaderSessionMutationAdmission = {
   scope: SidebarSessionMutationScope & { signal: AbortSignal };
   owner: string;
   draftSignal: AbortSignal;
+  isCurrent?: () => boolean;
 };
 export async function runHeaderSessionMutation(
   owner: ReturnType<ChatHeaderSessionActionSource["readOwner"]>,
@@ -140,10 +141,13 @@ export async function runHeaderSessionMutation(
   const outcomeOwner = admission?.owner ?? owner.headerOutcomeOwner;
   const draftSignal = admission?.draftSignal ?? owner.headerSessionDraftAbortController.signal;
   const capturedRow = admission ? row : { ...row };
+  const isCurrent = (candidate: SidebarSessionMutationScope) =>
+    owner.isHeaderSessionActionCurrent(candidate, outcomeOwner) &&
+    (admission?.isCurrent?.() ?? true);
   try {
     const { runHeaderSessionOperation } = await import("./chat-pane-session-operations.ts");
     return await runHeaderSessionOperation(action, capturedRow, scope, {
-      isCurrent: (candidate) => owner.isHeaderSessionActionCurrent(candidate, outcomeOwner),
+      isCurrent,
       publishError: (error) => owner.publishHeaderError(error, outcomeOwner),
       selectSession: (key) => owner.onPaneSessionChange?.(owner.paneId, key),
       label: (candidate) => owner.resolveHeaderSessionTitle(candidate),
@@ -168,7 +172,7 @@ export async function runHeaderSessionMutation(
       },
     });
   } catch (error) {
-    if (owner.isHeaderSessionActionCurrent(scope, outcomeOwner)) {
+    if (isCurrent(scope)) {
       owner.publishHeaderError(error, outcomeOwner);
     }
   }
