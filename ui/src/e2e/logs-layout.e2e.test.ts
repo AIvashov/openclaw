@@ -165,8 +165,9 @@ suite.define(() => {
         await expect.poll(() => heading.count()).toBe(1);
         await page.setViewportSize({ height: 844, width: 620 });
         await heading.waitFor({ state: "visible" });
+        // The shell drops its floating header a beat after the viewport crosses the width.
+        await expect.poll(async () => (await heading.boundingBox())?.height).toBeGreaterThan(1);
         const title = (await heading.boundingBox())!;
-        expect(title.height).toBeGreaterThan(1);
         const description = (await page.locator(".settings-section__desc").boundingBox())!;
         expect(description.y - (title.y + title.height)).toBeLessThan(8);
         await page.setViewportSize({ height: 844, width: 390 });
