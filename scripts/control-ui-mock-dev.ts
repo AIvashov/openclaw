@@ -66,8 +66,8 @@ import {
 } from "./control-ui-mock-channels.ts";
 import { buildCronMocks } from "./control-ui-mock-cron.ts";
 import { createStandaloneMockIsolationPlugins } from "./control-ui-mock-isolation.ts";
-import { buildMeetingsMocks } from "./control-ui-mock-meetings.ts";
 import { buildLogsTailMock } from "./control-ui-mock-logs.ts";
+import { buildMeetingsMocks } from "./control-ui-mock-meetings.ts";
 import { mentionMockInitScript } from "./control-ui-mock-mentions.ts";
 import {
   buildPluginCatalogMock,
