@@ -81,6 +81,17 @@ describe("PhoneSheet", () => {
     expect(handle.overlay.open).toBe(false);
   });
 
+  it("ignores a hide while closed, so the next opening stays open", async () => {
+    const { view, handle, surface } = mountSheet();
+    expect(handle.hide()).toBe(false);
+    await userEvent.click(view.getByRole("button", { name: "Filters" }));
+    await phase(surface, "open");
+    await new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+    expect(handle.overlay.open).toBe(true);
+  });
+
   it("stays open when the page beneath gets a pointer or focus", async () => {
     const { view, handle, surface } = mountSheet();
     const outside = view.getByRole("button", { name: "Outside" });
