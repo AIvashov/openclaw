@@ -13,6 +13,9 @@ const hasNativeShellClass = (...classNames: string[]) =>
     "openclaw-native-web-chrome",
     ...classNames,
   ].some((className) => document.documentElement.classList.contains(className));
+/** Phone widths where page actions join the top bar. */
+export const PHONE_MEDIA_QUERY =
+  "(max-width: 768px), (max-width: 932px) and (max-height: 500px) and (orientation: landscape)";
 
 export function mobileNavLayoutMediaQuery(): string {
   if (isNativeWebChromeHost()) {
