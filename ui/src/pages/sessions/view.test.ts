@@ -886,15 +886,17 @@ describe("sessions view at phone width", () => {
 
     trigger?.click();
     flush();
-    type ChoiceHost = HTMLElement & { params: { onChange: (value: string) => void } };
-    await vi.waitFor(() => expect(queryAll("openclaw-select-picker")).toHaveLength(3));
-    const [, sort, direction] = queryAll<ChoiceHost>("openclaw-select-picker");
-    sort!.params.onChange("key");
+    const choose = (select: HTMLSelectElement, value: string) => {
+      select.value = value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+    const [, sort, direction] = queryAll<HTMLSelectElement>("#sessions-filter-popover select");
+    choose(sort!, "key");
     expect(onSortChange).toHaveBeenLastCalledWith("key", "desc");
-    direction!.params.onChange("asc");
+    choose(direction!, "asc");
     expect(onSortChange).toHaveBeenLastCalledWith("updated", "asc");
-    expect(text(".sessions-filter-sheet__title")).toBe("Filters");
-    expect(attr(".sessions-filter-sheet__close", "aria-label")).toBe("Close");
+    expect(text("#sessions-filter-popover .oc-sheet__title")).toBe("Filters");
+    expect(attr("#sessions-filter-popover .oc-sheet__close", "aria-label")).toBe("Close");
 
     disposeSessionViews();
     await renderSettled([createRow("agent:main:alpha", { updatedAt: Date.now() })], {

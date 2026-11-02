@@ -128,7 +128,7 @@ suite.define(() => {
         await transcriptInput.waitFor();
         await transcriptInput.press("Escape");
         await filter.click();
-        const sheet = page.locator(".sessions-filter-sheet");
+        const sheet = page.locator(".sessions-filter-popover:popover-open");
         await sheet.getByRole("radiogroup", { name: "Session state" }).waitFor();
         await sheet.getByRole("button", { name: "Close" }).last().click();
         await sheet.waitFor({ state: "detached" });

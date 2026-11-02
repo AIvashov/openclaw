@@ -24,7 +24,9 @@ const trigger = (root: ParentNode) =>
 
 async function openSheet(root: ParentNode) {
   trigger(root)!.click();
-  await waitForSolid(() => expect(root.querySelector(".usage-filter-sheet")).not.toBeNull());
+  await waitForSolid(() =>
+    expect(root.querySelector(".usage-filter-sheet:popover-open")).not.toBeNull(),
+  );
   return root.querySelector<HTMLElement>(".usage-filter-sheet")!;
 }
 
@@ -57,7 +59,11 @@ describe("Usage at phone width", () => {
       ".usage-query-count",
       ".usage-filter-select",
     ]) {
-      expect(root.querySelector(removed), removed).toBeNull();
+      // The sheet's fields stay mounted while it is closed.
+      const onPage = [...root.querySelectorAll(removed)].filter(
+        (element) => !element.closest(".usage-filter-sheet"),
+      );
+      expect(onPage, removed).toHaveLength(0);
     }
     expect(root.textContent).not.toContain("Tip:");
   });
@@ -65,7 +71,7 @@ describe("Usage at phone width", () => {
   it("collects dates, time zone, identity, scope, query and facets in the sheet", async () => {
     const { root } = mountPhoneUsage();
     const sheet = await openSheet(root);
-    expect(sheet.querySelector(".usage-filter-sheet__title")?.textContent).toBe("Filters");
+    expect(sheet.querySelector(".oc-sheet__title")?.textContent).toBe("Filters");
     expect(sheet.querySelectorAll(".usage-date-input")).toHaveLength(2);
     expect(sheet.querySelectorAll(".usage-select")).toHaveLength(2);
     expect(sheet.textContent).toContain("Historical lineage");
